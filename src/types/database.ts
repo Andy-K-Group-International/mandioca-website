@@ -440,6 +440,47 @@ export interface Database {
           created_at?: string
         }
       }
+      staff_users: {
+        Row: {
+          id: string
+          auth_user_id: string | null
+          email: string
+          name: string
+          role: 'admin' | 'volunteer'
+          active: boolean
+          invited_by: string | null
+          invited_at: string | null
+          last_login_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          auth_user_id?: string | null
+          email: string
+          name: string
+          role?: 'admin' | 'volunteer'
+          active?: boolean
+          invited_by?: string | null
+          invited_at?: string | null
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          auth_user_id?: string | null
+          email?: string
+          name?: string
+          role?: 'admin' | 'volunteer'
+          active?: boolean
+          invited_by?: string | null
+          invited_at?: string | null
+          last_login_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -626,4 +667,48 @@ export interface BookingWithCheckin extends Booking {
   checkin_completed_at: string | null
   arrival_time: string | null
   checkout_completed_at: string | null
+}
+
+// ============================================
+// STAFF USER TYPES
+// ============================================
+
+export type StaffRole = 'admin' | 'volunteer'
+
+export interface StaffUser {
+  id: string
+  auth_user_id: string | null
+  email: string
+  name: string
+  role: StaffRole
+  active: boolean
+  invited_by: string | null
+  invited_at: string | null
+  last_login_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface StaffUserInsert {
+  email: string
+  name: string
+  role?: StaffRole
+  auth_user_id?: string | null
+  active?: boolean
+  invited_by?: string | null
+  invited_at?: string | null
+}
+
+export interface StaffUserUpdate {
+  email?: string
+  name?: string
+  role?: StaffRole
+  active?: boolean
+  last_login_at?: string | null
+}
+
+// Extended CleaningTask with staff user reference
+export interface CleaningTaskWithUser extends CleaningTask {
+  assigned_user_id: string | null
+  assigned_user?: StaffUser
 }

@@ -17,6 +17,8 @@ import {
   HelpCircle,
   CalendarDays,
   ChevronDown,
+  ClipboardCheck,
+  Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,6 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { useI18n } from '@/lib/i18n'
+import { useAuth } from '@/lib/hooks/use-auth'
 
 // UK Flag icon
 function UKFlagIcon({ className }: { className?: string }) {
@@ -62,18 +65,33 @@ export default function AdminNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const { locale, setLocale, t } = useI18n()
+  const { isAdmin, isVolunteer, loading: authLoading } = useAuth()
 
-  const navItems = [
-    { href: '/admin', label: t.admin.nav.home, icon: LayoutDashboard },
-    { href: '/admin/reservations', label: t.admin.nav.reservations, icon: CalendarDays },
-    { href: '/admin/content', label: t.admin.nav.content, icon: FileText },
-    { href: '/admin/rooms', label: t.admin.nav.rooms, icon: Bed },
-    { href: '/admin/media', label: t.admin.nav.gallery, icon: Image },
-    { href: '/admin/videos', label: t.admin.nav.videos, icon: Video },
-    { href: '/admin/reviews', label: t.admin.nav.reviews, icon: MessageSquare },
-    { href: '/admin/faq', label: t.admin.nav.faq, icon: HelpCircle },
-    { href: '/admin/settings', label: t.admin.nav.settings, icon: Settings },
+  // Define nav items with role-based access
+  // 'both' = admin and volunteer, 'admin' = admin only
+  const allNavItems = [
+    { href: '/admin', label: t.admin.nav.home, icon: LayoutDashboard, access: 'admin' as const },
+    { href: '/admin/reservations', label: t.admin.nav.reservations, icon: CalendarDays, access: 'admin' as const },
+    { href: '/admin/cleaning', label: t.admin.nav.cleaning, icon: ClipboardCheck, access: 'both' as const },
+    { href: '/admin/content', label: t.admin.nav.content, icon: FileText, access: 'admin' as const },
+    { href: '/admin/rooms', label: t.admin.nav.rooms, icon: Bed, access: 'admin' as const },
+    { href: '/admin/media', label: t.admin.nav.gallery, icon: Image, access: 'admin' as const },
+    { href: '/admin/videos', label: t.admin.nav.videos, icon: Video, access: 'admin' as const },
+    { href: '/admin/reviews', label: t.admin.nav.reviews, icon: MessageSquare, access: 'admin' as const },
+    { href: '/admin/faq', label: t.admin.nav.faq, icon: HelpCircle, access: 'admin' as const },
+    { href: '/admin/users', label: t.admin.nav.users, icon: Users, access: 'admin' as const },
+    { href: '/admin/settings', label: t.admin.nav.settings, icon: Settings, access: 'admin' as const },
   ]
+
+  // Filter nav items based on user role
+  // Legacy auth (cookie-based) is treated as admin
+  // Volunteers only see items with access: 'both'
+  const navItems = allNavItems.filter((item) => {
+    if (authLoading) return true // Show all while loading
+    if (isAdmin) return true // Admins see everything
+    if (isVolunteer) return item.access === 'both' // Volunteers see only 'both' items
+    return true // Default to showing all (backward compatibility)
+  })
 
   const handleLogout = async () => {
     setLoggingOut(true)
