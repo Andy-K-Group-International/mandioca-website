@@ -1,2 +1,2 @@
 export { I18nProvider, useI18n } from './context'
-export type { Locale, Dictionary } from './context'
+export type { Locale, Dictionary } from './dictionaries'
