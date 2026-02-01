@@ -15,7 +15,7 @@ export function About() {
   ]
 
   return (
-    <section id="about" className="py-12 sm:py-20 bg-white overflow-hidden">
+    <section id="about" className="py-8 sm:py-12 bg-white overflow-hidden">
       <div className="container mx-auto px-4 max-w-full">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Image Grid */}
@@ -23,7 +23,7 @@ export function About() {
             <div className="space-y-4">
               <div className="relative h-64 rounded-md overflow-hidden">
                 <Image
-                  src="/assets/images/mandioca-main-5.webp"
+                  src="/assets/images/mandioca-0005.webp"
                   alt="Mandioca Hostel main"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
@@ -31,7 +31,7 @@ export function About() {
               </div>
               <div className="relative h-48 rounded-md overflow-hidden">
                 <Image
-                  src="/assets/images/mandioca-living-1.webp"
+                  src="/assets/images/mandioca-0009.webp"
                   alt="Mandioca Hostel common area"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
@@ -41,7 +41,7 @@ export function About() {
             <div className="space-y-4 pt-8">
               <div className="relative h-48 rounded-md overflow-hidden">
                 <Image
-                  src="/assets/images/mandioca-dorm-1.webp"
+                  src="/assets/images/mandioca-0011.webp"
                   alt="Mandioca Hostel room"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
@@ -49,7 +49,7 @@ export function About() {
               </div>
               <div className="relative h-64 rounded-md overflow-hidden">
                 <Image
-                  src="/assets/images/mandioca-main-6.webp"
+                  src="/assets/images/mandioca-0006.webp"
                   alt="Mandioca Hostel outdoor area"
                   fill
                   className="object-cover hover:scale-105 transition-transform duration-500"
@@ -61,10 +61,7 @@ export function About() {
           {/* Content */}
           <div className="space-y-8">
             <div>
-              <span className="text-[#F7B03D] font-semibold text-sm uppercase tracking-wider">
-                {t.about.sectionTitle}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#0A4843] mt-2 mb-6">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#0A4843] mb-6">
                 {t.about.title}
               </h2>
               <div className="prose prose-lg text-gray-600 space-y-4">

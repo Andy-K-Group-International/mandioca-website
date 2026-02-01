@@ -1,0 +1,11 @@
+# Mandioca Hostel - robots.txt
+User-agent: *
+Allow: /
+
+# Disallow admin and API routes
+Disallow: /admin/
+Disallow: /api/
+Disallow: /booking/success
+
+# Sitemap
+Sitemap: https://mandiocahostel.com/sitemap.xml

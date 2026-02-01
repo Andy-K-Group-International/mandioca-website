@@ -6,12 +6,16 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Users, Bed, Check } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
+import posthog from 'posthog-js'
+
+// Blur placeholder for room images - warm tone
+const blurDataURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNlOGU0ZTAiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkNWQwY2IiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg=='
 
 const roomImages = [
-  '/assets/images/mandioca-dorm-2.webp',    // 8 Bed Mixed Dorm
-  '/assets/images/mandioca-dorm-1.webp',    // 12 Bed Mixed Dorm
-  '/assets/images/mandioca-private-1.webp', // Private Room - King Bed
-  '/assets/images/mandioca-private-2.webp', // Private Twin Room
+  '/assets/images/mandioca-0012.webp',    // 8 Bed Mixed Dorm
+  '/assets/images/mandioca-0011.webp',    // 12 Bed Mixed Dorm
+  '/assets/images/mandioca-0013.webp', // Private Room - King Bed
+  '/assets/images/mandioca-0014.webp', // Private Twin Room
 ]
 
 export function Rooms() {
@@ -47,6 +51,8 @@ export function Rooms() {
                   alt={room.name}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  placeholder="blur"
+                  blurDataURL={blurDataURL}
                 />
                 <div className="absolute top-4 left-4 flex gap-2">
                   <Badge
@@ -108,7 +114,19 @@ export function Rooms() {
                   className="w-full bg-[#0A4843]/90"
                   asChild
                 >
-                  <a href="#booking">{t.rooms.bookRoom}</a>
+                  <a
+                    href="#booking"
+                    onClick={() => {
+                      posthog.capture('room_card_clicked', {
+                        room_id: room.id,
+                        room_name: room.name,
+                        room_type: room.room_type,
+                        price_per_night: room.price_per_night,
+                      })
+                    }}
+                  >
+                    {t.rooms.bookRoom}
+                  </a>
                 </Button>
               </CardFooter>
             </Card>

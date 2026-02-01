@@ -8,63 +8,67 @@ import { useI18n } from '@/lib/i18n'
 
 const galleryImages = [
   {
-    src: '/assets/images/mandioca-main-1.webp',
+    src: '/assets/images/mandioca-0001.webp',
     alt: 'Mandioca Hostel exterior',
   },
   {
-    src: '/assets/images/mandioca-main-2.webp',
+    src: '/assets/images/mandioca-0002.webp',
     alt: 'Mandioca Hostel pool',
   },
   {
-    src: '/assets/images/mandioca-main-3.webp',
+    src: '/assets/images/mandioca-0003.webp',
     alt: 'Mandioca Hostel common area',
   },
   {
-    src: '/assets/images/mandioca-main-4.webp',
+    src: '/assets/images/mandioca-0004.webp',
     alt: 'Mandioca Hostel facilities',
   },
   {
-    src: '/assets/images/mandioca-main-5.webp',
+    src: '/assets/images/mandioca-0005.webp',
     alt: 'Mandioca Hostel garden',
   },
   {
-    src: '/assets/images/mandioca-main-6.webp',
+    src: '/assets/images/mandioca-0006.webp',
     alt: 'Mandioca Hostel outdoor',
   },
   {
-    src: '/assets/images/mandioca-main-7.webp',
+    src: '/assets/images/mandioca-0007.webp',
     alt: 'Mandioca Hostel interior',
   },
   {
-    src: '/assets/images/mandioca-main-8.webp',
+    src: '/assets/images/mandioca-0008.webp',
     alt: 'Mandioca Hostel view',
   },
   {
-    src: '/assets/images/mandioca-living-1.webp',
+    src: '/assets/images/mandioca-0009.webp',
     alt: 'Mandioca Hostel living area',
   },
   {
-    src: '/assets/images/mandioca-living-2.webp',
+    src: '/assets/images/mandioca-0010.webp',
     alt: 'Mandioca Hostel lounge',
   },
   {
-    src: '/assets/images/mandioca-dorm-1.webp',
+    src: '/assets/images/mandioca-0011.webp',
     alt: 'Mandioca Hostel dorm room',
   },
   {
-    src: '/assets/images/mandioca-dorm-2.webp',
+    src: '/assets/images/mandioca-0012.webp',
     alt: 'Mandioca Hostel beds',
   },
   {
-    src: '/assets/images/mandioca-private-1.webp',
+    src: '/assets/images/mandioca-0013.webp',
     alt: 'Mandioca Hostel private room',
   },
   {
-    src: '/assets/images/mandioca-bathroom-2.webp',
+    src: '/assets/images/mandioca-0014.webp',
+    alt: 'Mandioca Hostel private room 2',
+  },
+  {
+    src: '/assets/images/mandioca-0015.webp',
     alt: 'Mandioca Hostel bathroom',
   },
   {
-    src: '/assets/images/mandioca-cats-1.webp',
+    src: '/assets/images/mandioca-0016.webp',
     alt: 'Mandioca Hostel cats',
   },
 ]

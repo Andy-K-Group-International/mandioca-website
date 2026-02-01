@@ -5,7 +5,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, Instagram, Mail } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Menu, Instagram, Mail, ChevronDown } from 'lucide-react'
 import { useI18n } from '@/lib/i18n'
 
 // TikTok icon component since lucide doesn't have it
@@ -67,10 +73,6 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { locale, setLocale, t } = useI18n()
 
-  const toggleLanguage = () => {
-    setLocale(locale === 'en' ? 'es' : 'en')
-  }
-
   const navLinks = [
     { href: '#about', label: t.nav.aboutUs },
     { href: '#rooms', label: t.nav.rooms },
@@ -96,24 +98,39 @@ export function Header() {
             </a>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Language Switcher with Flags - shows flag of language to switch TO */}
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-1 sm:gap-2 hover:text-[#F7B03D] transition-colors px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border border-white/20 hover:border-[#F7B03D] cursor-pointer"
-              title={locale === 'en' ? 'Cambiar a Español' : 'Switch to English'}
-            >
-              {locale === 'en' ? (
-                <>
-                  <SpainFlagIcon className="h-4 w-5 sm:h-5 sm:w-7 rounded-sm" />
-                  <span className="text-xs sm:text-sm font-medium">ES</span>
-                </>
-              ) : (
-                <>
-                  <UKFlagIcon className="h-4 w-5 sm:h-5 sm:w-7 rounded-sm" />
-                  <span className="text-xs sm:text-sm font-medium">EN</span>
-                </>
-              )}
-            </button>
+            {/* Language Switcher Dropdown - shows current language */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 sm:gap-1.5 hover:text-[#F7B03D] transition-colors px-1.5 sm:px-2 py-0.5 sm:py-1 rounded border border-white/20 hover:border-[#F7B03D] cursor-pointer outline-none">
+                {locale === 'en' ? (
+                  <>
+                    <UKFlagIcon className="h-4 w-5 sm:h-5 sm:w-7 rounded-sm" />
+                    <span className="text-xs sm:text-sm font-medium">EN</span>
+                  </>
+                ) : (
+                  <>
+                    <SpainFlagIcon className="h-4 w-5 sm:h-5 sm:w-7 rounded-sm" />
+                    <span className="text-xs sm:text-sm font-medium">ES</span>
+                  </>
+                )}
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4 opacity-70" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[140px]">
+                <DropdownMenuItem
+                  onClick={() => setLocale('en')}
+                  className={`flex items-center gap-2 cursor-pointer ${locale === 'en' ? 'bg-gray-100' : ''}`}
+                >
+                  <UKFlagIcon className="h-4 w-6 rounded-sm" />
+                  <span>English</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setLocale('es')}
+                  className={`flex items-center gap-2 cursor-pointer ${locale === 'es' ? 'bg-gray-100' : ''}`}
+                >
+                  <SpainFlagIcon className="h-4 w-6 rounded-sm" />
+                  <span>Español</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <div className="w-px h-4 sm:h-5 bg-white/30 hidden sm:block" />
             <a href="https://wa.me/5493704951772" target="_blank" rel="noopener noreferrer" className="hover:text-[#F7B03D] transition-colors hidden sm:block">
               <WhatsAppIcon className="h-5 w-5" />
@@ -172,25 +189,33 @@ export function Header() {
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <nav className="flex flex-col gap-4 mt-8">
                   {/* Language Switcher in Mobile */}
-                  <button
-                    onClick={() => {
-                      toggleLanguage()
-                      setMobileMenuOpen(false)
-                    }}
-                    className="flex items-center gap-3 py-3 px-3 rounded-md bg-[#0A4843]/5 text-[#0A4843] font-medium cursor-pointer"
-                  >
-                    {locale === 'en' ? (
-                      <>
-                        <SpainFlagIcon className="h-5 w-7 rounded-sm" />
-                        <span>Cambiar a Español</span>
-                      </>
-                    ) : (
-                      <>
-                        <UKFlagIcon className="h-5 w-7 rounded-sm" />
-                        <span>Switch to English</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="space-y-1">
+                    <span className="text-xs text-gray-500 px-3">{locale === 'en' ? 'Language' : 'Idioma'}</span>
+                    <button
+                      onClick={() => {
+                        setLocale('en')
+                        setMobileMenuOpen(false)
+                      }}
+                      className={`flex items-center gap-3 py-2.5 px-3 rounded-md w-full transition-colors cursor-pointer ${
+                        locale === 'en' ? 'bg-[#0A4843] text-white' : 'bg-[#0A4843]/5 text-[#0A4843] hover:bg-[#0A4843]/10'
+                      }`}
+                    >
+                      <UKFlagIcon className="h-5 w-7 rounded-sm" />
+                      <span className="font-medium">English</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLocale('es')
+                        setMobileMenuOpen(false)
+                      }}
+                      className={`flex items-center gap-3 py-2.5 px-3 rounded-md w-full transition-colors cursor-pointer ${
+                        locale === 'es' ? 'bg-[#0A4843] text-white' : 'bg-[#0A4843]/5 text-[#0A4843] hover:bg-[#0A4843]/10'
+                      }`}
+                    >
+                      <SpainFlagIcon className="h-5 w-7 rounded-sm" />
+                      <span className="font-medium">Español</span>
+                    </button>
+                  </div>
 
                   <div className="border-t pt-4 space-y-2">
                     {navLinks.map((link) => (

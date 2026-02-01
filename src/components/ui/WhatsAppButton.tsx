@@ -1,5 +1,7 @@
 'use client'
 
+import posthog from 'posthog-js'
+
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -9,11 +11,18 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export function WhatsAppButton() {
+  const handleClick = () => {
+    posthog.capture('whatsapp_clicked', {
+      source: 'floating_button',
+    })
+  }
+
   return (
     <a
       href="https://wa.me/5493704951772"
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="fixed bottom-6 right-6 z-50 grid place-items-center w-14 h-14 min-w-[56px] min-h-[56px] bg-[#25D366] text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 cursor-pointer"
       style={{ borderRadius: '50%' }}
       aria-label="Contact us on WhatsApp"
