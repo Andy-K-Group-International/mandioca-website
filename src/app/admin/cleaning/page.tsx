@@ -29,7 +29,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { CleaningTask, CleaningTemplate, ChecklistItem } from '@/types/database'
+import AdminNav from '../components/AdminNav'
+import { useAuth } from '@/lib/hooks/use-auth'
+import type { CleaningTask, CleaningTemplate, ChecklistItem, StaffUser } from '@/types/database'
 
 // Area icons/colors
 const AREA_STYLES: Record<string, { icon: string; color: string }> = {
@@ -49,14 +51,13 @@ const STATUS_STYLES: Record<string, { label: string; color: string }> = {
   verified: { label: 'Verified', color: 'bg-blue-100 text-blue-800' },
 }
 
-// Volunteer names (in real app, this would come from a staff table)
-const VOLUNTEERS = ['Maria', 'Carlos', 'Ana', 'Pedro', 'Sofia', 'Diego']
-
 export default function CleaningPage() {
   const router = useRouter()
+  const { isAdmin, isVolunteer, userName, loading: authLoading, authenticated } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [tasks, setTasks] = useState<CleaningTask[]>([])
   const [templates, setTemplates] = useState<CleaningTemplate[]>([])
+  const [volunteers, setVolunteers] = useState<StaffUser[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day')
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -73,9 +74,32 @@ export default function CleaningPage() {
     scheduled_date: format(new Date(), 'yyyy-MM-dd'),
   })
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    fetchData()
-  }, [selectedDate, viewMode])
+    if (!authLoading && !authenticated) {
+      router.push('/admin/login')
+    }
+  }, [authLoading, authenticated, router])
+
+  useEffect(() => {
+    if (authenticated) {
+      fetchData()
+      fetchVolunteers()
+    }
+  }, [selectedDate, viewMode, authenticated])
+
+  async function fetchVolunteers() {
+    try {
+      const res = await fetch('/api/admin/users')
+      if (res.ok) {
+        const data = await res.json()
+        // Filter to active volunteers only (and admins for assignment)
+        setVolunteers(data.users?.filter((u: StaffUser) => u.active) || [])
+      }
+    } catch (error) {
+      console.error('Error fetching volunteers:', error)
+    }
+  }
 
   async function fetchData() {
     try {
@@ -92,7 +116,16 @@ export default function CleaningPage() {
 
       if (tasksRes.ok) {
         const data = await tasksRes.json()
-        setTasks(data.tasks || [])
+        let allTasks = data.tasks || []
+
+        // If volunteer, filter to only their assigned tasks
+        if (isVolunteer && userName) {
+          allTasks = allTasks.filter(
+            (task: CleaningTask) => task.assigned_to === userName
+          )
+        }
+
+        setTasks(allTasks)
       }
 
       if (templatesRes.ok) {
@@ -204,29 +237,41 @@ export default function CleaningPage() {
     )
   }
 
-  if (isLoading) {
+  if (authLoading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#0A4843]" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <AdminNav />
+      <main className="lg:pl-64">
+        <div className="p-6 lg:p-8">
+          <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Cleaning Management</h1>
-          <p className="text-gray-500">Track and manage daily cleaning tasks</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isVolunteer ? 'My Cleaning Tasks' : 'Cleaning Management'}
+          </h1>
+          <p className="text-gray-500">
+            {isVolunteer
+              ? 'View and complete your assigned cleaning tasks'
+              : 'Track and manage daily cleaning tasks'}
+          </p>
         </div>
-        <Button
-          onClick={() => setShowNewTaskModal(true)}
-          className="bg-[#0A4843] hover:bg-[#0A4843]/90"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Task
-        </Button>
+        {isAdmin && (
+          <Button
+            onClick={() => setShowNewTaskModal(true)}
+            className="bg-[#0A4843] hover:bg-[#0A4843]/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Task
+          </Button>
+        )}
       </div>
 
       {/* Stats Cards */}
@@ -457,8 +502,10 @@ export default function CleaningPage() {
                     <SelectValue placeholder="Select volunteer" />
                   </SelectTrigger>
                   <SelectContent>
-                    {VOLUNTEERS.map((name) => (
-                      <SelectItem key={name} value={name}>{name}</SelectItem>
+                    {volunteers.map((user) => (
+                      <SelectItem key={user.id} value={user.name}>
+                        {user.name} {user.role === 'admin' ? '(Admin)' : ''}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -493,6 +540,9 @@ export default function CleaningPage() {
           </Card>
         </div>
       )}
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
