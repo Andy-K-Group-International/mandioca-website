@@ -33,7 +33,7 @@ export async function AdminProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <AdminNav />
       <main className="lg:pl-64">
         <div className="p-6 lg:p-8">{children}</div>

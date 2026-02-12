@@ -5,20 +5,12 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
   LayoutDashboard,
-  FileText,
   Image,
-  Video,
-  Settings,
   LogOut,
   Menu,
   X,
   Bed,
-  MessageSquare,
-  HelpCircle,
-  CalendarDays,
   ChevronDown,
-  ClipboardCheck,
-  Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -65,33 +57,13 @@ export default function AdminNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const { locale, setLocale, t } = useI18n()
-  const { isAdmin, isVolunteer, loading: authLoading } = useAuth()
+  useAuth()
 
-  // Define nav items with role-based access
-  // 'both' = admin and volunteer, 'admin' = admin only
-  const allNavItems = [
-    { href: '/admin', label: t.admin.nav.home, icon: LayoutDashboard, access: 'admin' as const },
-    { href: '/admin/reservations', label: t.admin.nav.reservations, icon: CalendarDays, access: 'admin' as const },
-    { href: '/admin/cleaning', label: t.admin.nav.cleaning, icon: ClipboardCheck, access: 'both' as const },
-    { href: '/admin/content', label: t.admin.nav.content, icon: FileText, access: 'admin' as const },
-    { href: '/admin/rooms', label: t.admin.nav.rooms, icon: Bed, access: 'admin' as const },
-    { href: '/admin/media', label: t.admin.nav.gallery, icon: Image, access: 'admin' as const },
-    { href: '/admin/videos', label: t.admin.nav.videos, icon: Video, access: 'admin' as const },
-    { href: '/admin/reviews', label: t.admin.nav.reviews, icon: MessageSquare, access: 'admin' as const },
-    { href: '/admin/faq', label: t.admin.nav.faq, icon: HelpCircle, access: 'admin' as const },
-    { href: '/admin/users', label: t.admin.nav.users, icon: Users, access: 'admin' as const },
-    { href: '/admin/settings', label: t.admin.nav.settings, icon: Settings, access: 'admin' as const },
+  const navItems = [
+    { href: '/admin', label: t.admin.nav.home, icon: LayoutDashboard },
+    { href: '/admin/media', label: t.admin.nav.gallery, icon: Image },
+    { href: '/admin/rooms', label: t.admin.nav.rooms, icon: Bed },
   ]
-
-  // Filter nav items based on user role
-  // Legacy auth (cookie-based) is treated as admin
-  // Volunteers only see items with access: 'both'
-  const navItems = allNavItems.filter((item) => {
-    if (authLoading) return true // Show all while loading
-    if (isAdmin) return true // Admins see everything
-    if (isVolunteer) return item.access === 'both' // Volunteers see only 'both' items
-    return true // Default to showing all (backward compatibility)
-  })
 
   const handleLogout = async () => {
     setLoggingOut(true)
@@ -117,14 +89,19 @@ export default function AdminNav() {
             href={item.href}
             onClick={() => setMobileMenuOpen(false)}
             className={cn(
-              'flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+              'group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200',
               isActive
-                ? 'bg-[#0A4843] text-white'
-                : 'text-gray-600 hover:bg-gray-100'
+                ? 'bg-[#F5C0C0]/15 text-[#01011b] border border-[#cda0a5]/30'
+                : 'text-[#525a70] hover:text-[#01011b] hover:bg-[#f5f5f7]'
             )}
           >
-            <Icon className="w-5 h-5" />
-            <span>{item.label}</span>
+            <div className={cn(
+              'w-8 h-8 rounded-lg flex items-center justify-center transition-colors',
+              isActive ? 'bg-[#F5C0C0]/30' : 'bg-[#f5f5f7] group-hover:bg-[#F5C0C0]/15'
+            )}>
+              <Icon className={cn('w-4 h-4 transition-colors', isActive ? 'text-[#cda0a5]' : 'text-[#8b93a8] group-hover:text-[#cda0a5]')} />
+            </div>
+            <span className="text-sm font-medium">{item.label}</span>
           </Link>
         )
       })}
@@ -135,59 +112,60 @@ export default function AdminNav() {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
+        <div className="flex flex-col flex-grow bg-white border-r border-[#e2e4ea]">
           {/* Logo */}
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-            <div className="w-10 h-10 bg-[#0A4843] rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-3 px-6 py-6 border-b border-[#e2e4ea]">
+            <div className="w-10 h-10 bg-[#01011b] rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">M</span>
             </div>
             <div>
-              <h1 className="font-bold text-gray-900">Mandioca</h1>
-              <p className="text-xs text-gray-500">{t.admin.nav.adminPanel}</p>
+              <h1 className="font-bold text-[#01011b] tracking-tight">Mandioca</h1>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#8b93a8] font-mono">{t.admin.nav.adminPanel}</p>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-[#8b93a8] font-mono block px-4 mb-4">Menu</span>
             <NavLinks />
           </nav>
 
           {/* Language Switcher & Logout */}
-          <div className="p-4 border-t border-gray-200 space-y-2">
+          <div className="p-4 border-t border-[#e2e4ea] space-y-2">
             {/* Language Switcher */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  className="w-full justify-between text-[#525a70] hover:text-[#01011b] hover:bg-[#f5f5f7] transition-all duration-200"
                 >
                   <span className="flex items-center gap-2">
                     {locale === 'en' ? (
                       <>
                         <UKFlagIcon className="h-4 w-6 rounded-sm" />
-                        <span>English</span>
+                        <span className="text-sm">English</span>
                       </>
                     ) : (
                       <>
                         <SpainFlagIcon className="h-4 w-6 rounded-sm" />
-                        <span>Espanol</span>
+                        <span className="text-sm">Espanol</span>
                       </>
                     )}
                   </span>
-                  <ChevronDown className="h-4 w-4 opacity-70" />
+                  <ChevronDown className="h-4 w-4 opacity-50" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[200px]">
                 <DropdownMenuItem
                   onClick={() => setLocale('en')}
-                  className={`flex items-center gap-2 cursor-pointer ${locale === 'en' ? 'bg-gray-100' : ''}`}
+                  className={`flex items-center gap-2 cursor-pointer ${locale === 'en' ? 'bg-[#f5f5f7]' : ''}`}
                 >
                   <UKFlagIcon className="h-4 w-6 rounded-sm" />
                   <span>English</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setLocale('es')}
-                  className={`flex items-center gap-2 cursor-pointer ${locale === 'es' ? 'bg-gray-100' : ''}`}
+                  className={`flex items-center gap-2 cursor-pointer ${locale === 'es' ? 'bg-[#f5f5f7]' : ''}`}
                 >
                   <SpainFlagIcon className="h-4 w-6 rounded-sm" />
                   <span>Espanol</span>
@@ -198,29 +176,30 @@ export default function AdminNav() {
             {/* Logout */}
             <Button
               variant="ghost"
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="w-full justify-start text-[#525a70] hover:text-red-600 hover:bg-red-50 transition-all duration-200"
               onClick={handleLogout}
               disabled={loggingOut}
             >
               <LogOut className="w-5 h-5 mr-3" />
-              {loggingOut ? t.admin.nav.loggingOut : t.admin.nav.logout}
+              <span className="text-sm">{loggingOut ? t.admin.nav.loggingOut : t.admin.nav.logout}</span>
             </Button>
           </div>
         </div>
       </aside>
 
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-[#e2e4ea]">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#0A4843] rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#01011b] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">M</span>
             </div>
-            <span className="font-bold text-gray-900">Admin</span>
+            <span className="font-bold text-[#01011b]">Admin</span>
           </div>
           <Button
             variant="ghost"
             size="icon"
+            className="text-[#525a70] hover:text-[#01011b] hover:bg-[#f5f5f7]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -234,7 +213,7 @@ export default function AdminNav() {
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
+        <div className="lg:hidden fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
       )}
 
       {/* Mobile Menu */}
@@ -245,60 +224,61 @@ export default function AdminNav() {
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-            <div className="w-10 h-10 bg-[#0A4843] rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-3 px-6 py-5 border-b border-[#e2e4ea]">
+            <div className="w-10 h-10 bg-[#01011b] rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">M</span>
             </div>
             <div>
-              <h1 className="font-bold text-gray-900">Mandioca</h1>
-              <p className="text-xs text-gray-500">{t.admin.nav.adminPanel}</p>
+              <h1 className="font-bold text-[#01011b] tracking-tight">Mandioca</h1>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#8b93a8] font-mono">{t.admin.nav.adminPanel}</p>
             </div>
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-[#8b93a8] font-mono block px-4 mb-4">Menu</span>
             <NavLinks />
           </nav>
 
           {/* Language Switcher & Logout - Mobile */}
-          <div className="p-4 border-t border-gray-200 space-y-2">
+          <div className="p-4 border-t border-[#e2e4ea] space-y-2">
             {/* Language Switcher - Mobile */}
             <div className="space-y-1">
-              <span className="text-xs text-gray-500 px-3">{t.admin.nav.language}</span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#8b93a8] font-mono px-3">{t.admin.nav.language}</span>
               <button
                 onClick={() => {
                   setLocale('en')
                   setMobileMenuOpen(false)
                 }}
-                className={`flex items-center gap-3 py-2.5 px-3 rounded-md w-full transition-colors cursor-pointer ${
-                  locale === 'en' ? 'bg-[#0A4843] text-white' : 'bg-[#0A4843]/5 text-[#0A4843] hover:bg-[#0A4843]/10'
+                className={`flex items-center gap-3 py-2.5 px-3 rounded-xl w-full transition-all duration-200 cursor-pointer ${
+                  locale === 'en' ? 'bg-[#F5C0C0]/15 text-[#01011b] border border-[#cda0a5]/30' : 'text-[#525a70] hover:text-[#01011b] hover:bg-[#f5f5f7]'
                 }`}
               >
                 <UKFlagIcon className="h-5 w-7 rounded-sm" />
-                <span className="font-medium">English</span>
+                <span className="font-medium text-sm">English</span>
               </button>
               <button
                 onClick={() => {
                   setLocale('es')
                   setMobileMenuOpen(false)
                 }}
-                className={`flex items-center gap-3 py-2.5 px-3 rounded-md w-full transition-colors cursor-pointer ${
-                  locale === 'es' ? 'bg-[#0A4843] text-white' : 'bg-[#0A4843]/5 text-[#0A4843] hover:bg-[#0A4843]/10'
+                className={`flex items-center gap-3 py-2.5 px-3 rounded-xl w-full transition-all duration-200 cursor-pointer ${
+                  locale === 'es' ? 'bg-[#F5C0C0]/15 text-[#01011b] border border-[#cda0a5]/30' : 'text-[#525a70] hover:text-[#01011b] hover:bg-[#f5f5f7]'
                 }`}
               >
                 <SpainFlagIcon className="h-5 w-7 rounded-sm" />
-                <span className="font-medium">Espanol</span>
+                <span className="font-medium text-sm">Espanol</span>
               </button>
             </div>
 
             {/* Logout - Mobile */}
             <Button
               variant="ghost"
-              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="w-full justify-start text-[#525a70] hover:text-red-600 hover:bg-red-50 transition-all duration-200"
               onClick={handleLogout}
               disabled={loggingOut}
             >
               <LogOut className="w-5 h-5 mr-3" />
-              {loggingOut ? t.admin.nav.loggingOut : t.admin.nav.logout}
+              <span className="text-sm">{loggingOut ? t.admin.nav.loggingOut : t.admin.nav.logout}</span>
             </Button>
           </div>
         </div>
