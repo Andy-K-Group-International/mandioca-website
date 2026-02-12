@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { format, addDays, startOfWeek, endOfWeek } from 'date-fns'
+import { format, addDays, addWeeks, startOfWeek, endOfWeek } from 'date-fns'
 import {
   CheckCircle,
   Circle,
@@ -72,6 +72,8 @@ export default function CleaningPage() {
     template_id: '',
     assigned_to: '',
     scheduled_date: format(new Date(), 'yyyy-MM-dd'),
+    recurrence: 'none' as 'none' | 'daily' | 'weekly',
+    recurrence_days: [] as number[], // 0=Sun, 1=Mon, ... 6=Sat
   })
 
   // Redirect to login if not authenticated
@@ -255,12 +257,12 @@ export default function CleaningPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {isVolunteer ? 'My Cleaning Tasks' : 'Cleaning Management'}
+            {isVolunteer ? 'My Tasks' : 'Task Management'}
           </h1>
           <p className="text-gray-500">
             {isVolunteer
-              ? 'View and complete your assigned cleaning tasks'
-              : 'Track and manage daily cleaning tasks'}
+              ? 'View and complete your assigned tasks'
+              : 'Track and manage daily tasks'}
           </p>
         </div>
         {isAdmin && (
@@ -413,7 +415,7 @@ export default function CleaningPage() {
               <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks found</h3>
               <p className="text-gray-500 mb-4">
                 {tasks.length === 0
-                  ? 'No cleaning tasks scheduled for this period'
+                  ? 'No tasks scheduled for this period'
                   : 'No tasks match your current filters'}
               </p>
               <Button onClick={() => setShowNewTaskModal(true)} variant="outline">
@@ -439,7 +441,7 @@ export default function CleaningPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <Card className="w-full max-w-md">
             <CardHeader>
-              <CardTitle>Add Cleaning Task</CardTitle>
+              <CardTitle>Add Task</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
