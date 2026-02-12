@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,14 +8,31 @@ import { Label } from '@/components/ui/label'
 import { useI18n } from '@/lib/i18n'
 import { Loader2, Lock, User, Eye, EyeOff } from 'lucide-react'
 
+const REMEMBER_KEY = 'admin_remember'
+
 export default function AdminLoginPage() {
   const router = useRouter()
   const { t } = useI18n()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBER_KEY)
+      if (saved) {
+        const { username: u, password: p } = JSON.parse(saved)
+        setUsername(u || '')
+        setPassword(p || '')
+        setRememberMe(true)
+      }
+    } catch {
+      // ignore corrupted data
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,6 +52,13 @@ export default function AdminLoginPage() {
       if (!response.ok) {
         setError(data.error || t.admin.login.error.default)
         return
+      }
+
+      // Save or clear remembered credentials
+      if (rememberMe) {
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify({ username, password }))
+      } else {
+        localStorage.removeItem(REMEMBER_KEY)
       }
 
       // Hard redirect to admin dashboard to ensure fresh server render
@@ -105,6 +129,25 @@ export default function AdminLoginPage() {
                   )}
                 </button>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                id="rememberMe"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => {
+                  setRememberMe(e.target.checked)
+                  if (!e.target.checked) {
+                    localStorage.removeItem(REMEMBER_KEY)
+                  }
+                }}
+                className="h-4 w-4 rounded border-gray-300 text-[#0A4843] focus:ring-[#0A4843] cursor-pointer"
+                disabled={loading}
+              />
+              <Label htmlFor="rememberMe" className="text-sm text-gray-600 cursor-pointer select-none">
+                {t.admin.login.rememberMe}
+              </Label>
             </div>
 
             {error && (
